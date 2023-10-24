@@ -1,44 +1,27 @@
-import asyncio
-from aiogram import Bot, Dispatcher
-from aiogram.filters import Command
-from aiogram.types import Message, KeyboardButton
+import json
+from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-# ТОКЕН
-API_TOKEN = "6744538105:AAFWbWG--k5UYa4aWCLtVPLam8YVkpl18u8"
-
-# Объявление бота
-bot = Bot(API_TOKEN, parse_mode='HTML')
-dp = Dispatcher()
+with open('data_file.json', 'r', encoding='utf-8') as data_f:
+    data_f = json.load(data_f)
 
 
-@dp.message(Command("start"))
-async def start(message: Message):
+# функция отвечат за создание пользовательской клавиатуры
+def keybord_menu():
     builder = ReplyKeyboardBuilder()
 
-    # Список возможных команд
-    button_text = ["Начать тренировку",
-                   "Смотреть прогресс",
-                   "Создать тренировку",
-                   "Добавить упражнение"]
+    # button_text - список возможных команд на начальном экране клавиатуры
+    button_text = [data_f["start_train"],
+                    data_f["watch_progress"],
+                    data_f["create_train"],
+                    data_f["add_exercise"]]
+
+    # Добавление команд в пользовательскую клавиатуру
     for i in range(len(button_text)):
         builder.add(KeyboardButton(text=button_text[i]))
 
     # Сетка расположения кнопок клавиатуры (в данном случае 2х2)
     builder.adjust(2, 2)
 
-    # Приветствие бота ИСПРАВИТЬ
-    await message.answer(f"Hello <b>{message.from_user.first_name}</b>",
-                         reply_markup=builder.as_markup(resize_keyboard=True))
+    return builder
 
-
-async def main():
-    # Удаление вебхуков (если до запуска бота ему приходили команды, то
-    # после включения он не будет отвечать на каждую из этих команд)
-    await bot.delete_webhook(drop_pending_updates=True)
-
-    await dp.start_polling(bot)
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
