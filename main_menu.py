@@ -1,7 +1,7 @@
 import asyncio
 import json
 import keybords_button
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.types import Message, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
@@ -24,10 +24,20 @@ async def start(message: Message):
     await message.answer(data_f["hello_text"], reply_markup=builder.as_markup(resize_keyboard=True))
 
 
-# Создание тренировки
-@dp.message(Command(data_f["create_train"]))
+# Кнопка "Назад" выхогдит в главное меню
+@dp.message(F.text==data_f["back"])
+async def back_(message: Message):
+     print("back")
+     builder = keybords_button.keybord_menu()
+     await message.answer(data_f["main_menu"], reply_markup=builder.as_markup(resize_keyboard=True))
+
+
+# Кнопка редактора тренировки
+@dp.message(F.text==data_f["creator"])
 async def create_train(message: Message):
-    pass
+    print("creator")
+    builder_creator = keybords_button.keybord_creator()
+    await message.answer(data_f["creator_text"], reply_markup=builder_creator.as_markup(resize_keyboard=True))
 
 
 async def main():
